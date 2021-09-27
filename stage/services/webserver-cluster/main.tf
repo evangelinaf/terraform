@@ -108,6 +108,14 @@ variable "server_port" {
   default = 8080
 }
 
-output "elb_dns_name" {
-  value = "${aws_elb.elb.dns_name}"
+terraform {
+    backend "s3" {
+        bucket = "terraform-up-and-running-stage-eva"
+        key = "stage/services/webserver-cluster/terraform.tfstate"
+        region = "us-west-2"
+
+        dynamodb_table = "terraform-up-and-running-locks"
+        encrypt = true
+        profile = "efiorucci"
+    }
 }
