@@ -103,10 +103,6 @@ resource "aws_elb" "elb" {
     target = "HTTP:${var.server_port}/"
   }
 }
-variable "server_port" {
-  description = "The port the server will use for HTTP requests"
-  default = 8080
-}
 
 terraform {
     backend "s3" {
