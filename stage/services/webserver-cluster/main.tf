@@ -18,18 +18,22 @@ resource "aws_launch_configuration" "launch_configuration" {
   image_id  = "ami-22eb9e5a"
   instance_type = "t1.micro"
   security_groups = ["${aws_security_group.security-group.id}"]
-
-  user_data = <<-EOF
-              #!/bin/bash
-              echo "Hello, World" > index.html
-              nohup busybox httpd -f -p "${var.server_port}" &
-              EOF
+  user_data = "${data.template_file.user_data.rendered}"
           
   lifecycle {
     create_before_destroy = true
   }
 }
 
+data "template_file" "user_data" {
+  template = "${file("user-data.sh")}"
+
+  vars {
+    server_port = "${var.server_port}"
+    db_address = "${data.terraform_remote_state.db.address}"
+    db_port = "${data.terraform_remote_stage.db.port}"
+  }
+}
 
 resource "aws_security_group" "security-group" {
   name = "terraform-segurity-group"
@@ -102,6 +106,17 @@ resource "aws_elb" "elb" {
     interval = 30
     target = "HTTP:${var.server_port}/"
   }
+}
+
+data "terraform_remote_state" "db" {
+  backend = "s3"
+
+  config = {
+    bucket = "terraform-up-and-running-stage-eva"
+    key = "stage/data-stores/mysql/terraform.tsfstate"
+    region = "us-west-2"
+    profile = "efiorucci"
+  } 
 }
 
 terraform {
