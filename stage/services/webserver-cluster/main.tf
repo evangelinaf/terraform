@@ -28,10 +28,10 @@ resource "aws_launch_configuration" "launch_configuration" {
 data "template_file" "user_data" {
   template = "${file("user-data.sh")}"
 
-  vars {
+  vars = {
     server_port = "${var.server_port}"
-    db_address = "${data.terraform_remote_state.db.address}"
-    db_port = "${data.terraform_remote_stage.db.port}"
+    db_address = "${data.terraform_remote_state.db.outputs.address}"
+    db_port = "${data.terraform_remote_state.db.outputs.port}"
   }
 }
 
@@ -118,6 +118,7 @@ data "terraform_remote_state" "db" {
     profile = "efiorucci"
   } 
 }
+
 
 terraform {
     backend "s3" {
