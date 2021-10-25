@@ -113,7 +113,7 @@ data "terraform_remote_state" "db" {
 
   config = {
     bucket = "terraform-up-and-running-stage-eva"
-    key = "stage/data-stores/mysql/terraform.tsfstate"
+    key = "stage/data-stores/mysql/terraform.tfstate"
     region = "us-west-2"
     profile = "efiorucci"
   } 
